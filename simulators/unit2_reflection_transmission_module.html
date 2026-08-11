@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reflection &amp; Transmission at Dielectric Interfaces — Interactive Module</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<style>
+:root{
+  --navy:#123a7a; --navy-dark:#0b2c5e; --cyan:#29b6e8; --orange:#e8720c; --magenta:#c2185b; --gray-mid:#8a97a6;
+  --bg:#eef2f7; --card:#ffffff; --border:#dde3ea; --ink:#1c2733; --ink-soft:#5b6b7c;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:"Times New Roman", Georgia, serif;font-size:12pt;line-height:1.55;}
+h1,h2,h3,h4{font-family:"Times New Roman", Georgia, serif;color:var(--navy);font-weight:700;margin:0 0 .5em 0;}
+h1{font-size:22pt;} h2{font-size:16pt;border-bottom:2px solid var(--border);padding-bottom:.25em;margin-top:1.4em;}
+h3{font-size:14pt;color:var(--navy-dark);} h4{font-size:10.5pt;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);}
+p{margin:.5em 0;} a{color:var(--magenta);}
+.eyebrow{font-family:Georgia,serif;font-size:9.5pt;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);font-weight:700;}
+header.topbar{position:sticky;top:0;z-index:50;background:#fff;color:var(--navy);padding:.7em 1.2em;display:flex;align-items:center;gap:1.2em;flex-wrap:wrap;border-bottom:3px solid var(--cyan);box-shadow:0 1px 4px rgba(18,58,122,.08);}
+header.topbar .brand{font-weight:700;font-size:16pt;color:var(--navy);}
+header.topbar .brand span{color:var(--ink-soft);font-style:italic;font-weight:400;font-size:11pt;}
+nav.tabs{display:flex;gap:.4em;flex-wrap:wrap;}
+nav.tabs button{background:#eef1f4;border:1px solid var(--border);color:var(--navy);font-family:Georgia,serif;font-size:10.5pt;padding:.55em 1.1em;cursor:pointer;border-radius:4px;font-weight:600;letter-spacing:.03em;}
+nav.tabs button:hover{background:#e2e9f2;}
+nav.tabs button.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+main{max-width:1200px;margin:0 auto;padding:1.6em 1.6em 5em;}
+.page{display:none;} .page.active{display:block;}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:1.2em 1.4em;margin:1em 0;box-shadow:0 1px 3px rgba(18,58,122,.06);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1em;} @media(max-width:760px){.grid2{grid-template-columns:1fr;}}
+.legend{display:flex;gap:1.1em;flex-wrap:wrap;font-size:10pt;margin:.6em 0;}
+.legend .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:.35em;vertical-align:middle;}
+table{border-collapse:collapse;width:100%;font-size:10.3pt;margin:.8em 0;}
+th,td{border:1px solid var(--border);padding:.5em .6em;text-align:left;vertical-align:top;}
+th{background:var(--navy);color:#fff;} tr:nth-child(even) td{background:#f4f7fb;}
+blockquote.eq{background:#f4f7fb;border-left:4px solid var(--magenta);padding:.6em 1em;margin:.8em 0;font-size:12.5pt;overflow-x:auto;}
+.pill-note{background:#eaf6fc;border:1px dashed var(--cyan);padding:.6em .9em;border-radius:4px;font-size:10.2pt;margin:.8em 0;}
+
+.sim-shell{display:grid;grid-template-columns:0.85fr 2fr 0.9fr;gap:1em;align-items:stretch;}
+@media(max-width:980px){.sim-shell{grid-template-columns:1fr;}}
+.simcol{background:var(--card);border:1px solid var(--border);border-radius:8px;border-top:4px solid var(--cyan);padding:0;overflow:hidden;display:flex;flex-direction:column;}
+.simcol.numcol{border-top-color:var(--orange);}
+.simcol .col-head{padding:.75em 1em;font-weight:700;font-size:11pt;color:var(--navy);letter-spacing:.03em;border-bottom:1px solid var(--border);}
+.simcol.numcol .col-head{color:var(--orange);}
+.simcol .col-body{padding:.9em 1em;flex:1;display:flex;flex-direction:column;gap:.7em;}
+.sim-canvas-wrap{background:#fff;border-radius:0;padding:0;}
+canvas{width:100%;display:block;background:#ffffff;border-radius:3px;}
+.controls{display:flex;flex-direction:column;gap:.75em;}
+.control-block{background:transparent;border:none;border-radius:0;padding:0;}
+.control-row{display:flex;flex-direction:column;gap:.25em;margin:.5em 0;}
+.control-row label{font-size:10pt;color:var(--ink-soft);display:flex;justify-content:space-between;font-weight:600;}
+input[type=range]{accent-color:var(--navy);width:100%;}
+select{font-family:Georgia,serif;padding:.45em;width:100%;border:1px solid var(--border);border-radius:4px;background:#fff;color:var(--ink);}
+.btnrow{display:flex;gap:.5em;flex-wrap:wrap;margin-top:.4em;}
+button.ctl{background:var(--navy);color:#fff;border:1px solid var(--navy-dark);padding:.5em .9em;border-radius:4px;font-family:Georgia,serif;font-size:9.5pt;cursor:pointer;font-weight:600;}
+button.ctl:hover{background:var(--navy-dark);}
+button.ctl.secondary{background:transparent;color:var(--navy);border-color:var(--border);}
+
+.num-table{width:100%;border-collapse:collapse;font-size:10.3pt;}
+.num-table tr{border-bottom:1px dashed var(--border);}
+.num-table td{padding:.5em .2em;border:none;}
+.num-table td.lbl{color:var(--navy);font-weight:700;}
+.num-table td.val{color:var(--magenta);font-weight:700;text-align:right;font-family:"Courier New",monospace;}
+
+.appcard{border:1px solid var(--border);background:var(--card);border-radius:8px;padding:1.1em 1.3em;margin:1em 0;box-shadow:0 1px 3px rgba(18,58,122,.06);}
+.appcard h3{margin-top:0;}
+.applbl{font-weight:700;color:var(--ink-soft);}
+.vizsub{display:flex;gap:.4em;flex-wrap:wrap;margin-bottom:1em;}
+.vizsub button{background:#eef1f4;border:1px solid var(--border);padding:.6em 1.2em;font-family:Georgia,serif;font-size:10pt;border-radius:16px;cursor:pointer;font-weight:600;color:var(--navy);}
+.vizsub button.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.apppage{display:none;} .apppage.active{display:block;}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">Reflection &amp; Transmission at Dielectric Interfaces<span>&nbsp;· Normal &amp; Oblique Incidence — M.Sc. Electrodynamics</span></div>
+  <nav class="tabs" id="mainNav">
+    <button data-page="concepts" class="active">I · Concepts</button>
+    <button data-page="sim">II · Simulator</button>
+    <button data-page="apps">III · Applications</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ======================= CONCEPTS ======================= -->
+<section class="page active" id="page-concepts">
+  <p class="eyebrow">Layer 1 — Conceptual Understanding</p>
+  <h1>Reflection &amp; Transmission Coefficients at a Dielectric Interface</h1>
+  <p>When a plane EM wave strikes the boundary between two linear dielectric media, part of its energy reflects back and part transmits across — in general at a <em>different</em> angle. How much of each, and how the transmitted ray bends, follows directly from the same boundary conditions on <b>E</b> and <b>H</b> used throughout this course, evaluated at normal incidence and then at an arbitrary angle for the two independent polarizations.</p>
+
+  <div class="legend">
+    <span><span class="dot" style="background:var(--navy)"></span>medium 1 / incident &amp; reflected wave</span>
+    <span><span class="dot" style="background:var(--orange)"></span>interface / boundary</span>
+    <span><span class="dot" style="background:var(--magenta)"></span>medium 2 / transmitted wave</span>
+  </div>
+
+  <div class="panel">
+    <h3>Learning Outcomes</h3>
+    <ul>
+      <li>Derive the normal-incidence reflection and transmission coefficients from intrinsic impedances.</li>
+      <li>Derive Snell's law from phase-matching at the interface.</li>
+      <li>State and use the Fresnel equations for oblique incidence, separately for TE and TM polarization.</li>
+      <li>Identify Brewster's angle and the critical angle for total internal reflection, and explain each physically.</li>
+      <li>Connect these coefficients to two engineering problems: radar signal transmission through a dielectric radome, and anti-reflection coatings on solar panels.</li>
+    </ul>
+  </div>
+
+  <h2>Normal Incidence</h2>
+  <div class="panel">
+    <h4>Setup</h4>
+    <p>A plane wave in medium 1 (intrinsic impedance <span id="m1"></span>) strikes, head-on, a planar interface with medium 2 (impedance <span id="m2"></span>). Continuity of tangential <b>E</b> and <b>H</b> at the boundary gives:</p>
+    <blockquote class="eq"><span id="m3"></span></blockquote>
+    <h4>Physical Interpretation</h4>
+    <p>This is exactly the transmission-line reflection formula with impedance playing the role of characteristic impedance — a wave reflects whenever it meets an impedance mismatch, and the more different <span id="m4"></span> and <span id="m5"></span> are, the larger the reflection.</p>
+    <h4>Key Equation</h4>
+    <blockquote class="eq"><span id="m6"></span></blockquote>
+  </div>
+
+  <h2>Snell's Law</h2>
+  <div class="panel">
+    <h4>Derivation Sketch</h4>
+    <p>Requiring the phase of the incident and transmitted waves to match at every point on the interface (so the boundary condition can hold for all time and all points on the surface) forces the tangential components of the wavevectors to be equal, which for non-magnetic media reduces to:</p>
+    <blockquote class="eq"><span id="m7"></span></blockquote>
+    <p>where <span id="m8"></span> is the refractive index of medium <span id="m9"></span>.</p>
+  </div>
+
+  <h2>Oblique Incidence — The Fresnel Equations</h2>
+  <div class="panel">
+    <h4>Why Two Polarizations</h4>
+    <p>At oblique incidence, the direction of <b>E</b> relative to the plane of incidence matters. <b>TE (perpendicular)</b> polarization has <b>E</b> perpendicular to the plane of incidence; <b>TM (parallel)</b> polarization has <b>E</b> lying in that plane. Matching tangential <b>E</b> and <b>H</b> at the boundary gives a different coefficient for each.</p>
+    <h4>Key Equations</h4>
+    <blockquote class="eq"><span id="m10"></span></blockquote>
+    <blockquote class="eq"><span id="m11"></span></blockquote>
+    <p>Both reduce to the normal-incidence formulas above when <span id="m12"></span>.</p>
+    <h4>Important Observations</h4>
+    <ul>
+      <li><b>Brewster's angle</b> <span id="m13"></span>: the angle at which <span id="m14"></span> exactly — TM-polarized light is transmitted with <em>zero</em> reflection. There is no equivalent angle for TE polarization in ordinary (non-magnetic) dielectrics.</li>
+      <li><b>Critical angle</b> <span id="m15"></span> (only defined when <span id="m16"></span>, i.e. going from denser to less dense medium): beyond this angle <span id="m17"></span> becomes imaginary and the wave undergoes <b>total internal reflection</b> — <span id="m18"></span> for both polarizations.</li>
+      <li>Power reflectance and transmittance, <span id="m19"></span>, always sum to 1 for lossless media — energy is conserved between the reflected and transmitted beams.</li>
+    </ul>
+    <h4>Summary</h4>
+    <p>Every reflection/transmission problem in this module reduces to the same four numbers — <span id="m20"></span> — evaluated from just the two dielectric constants and the incident angle, with Snell's law supplying <span id="m21"></span> along the way.</p>
+  </div>
+
+  <h2>Extension to a Conductor Medium</h2>
+  <div class="panel">
+    <h4>Physical Interpretation</h4>
+    <p>Everything above assumed both media were lossless, real-valued <span id="m30b"></span>. A conductor is instead described by its conductivity <span id="m31b"></span>, which makes the effective permittivity <span id="m32b"></span> and the refractive index and impedance <b>complex</b> — exactly the <span id="m33b"></span> and <span id="m34b"></span> used for α, β, and η in the EM Wave Propagation module.</p>
+    <h4>Key Equation</h4>
+    <blockquote class="eq"><span id="m35b"></span></blockquote>
+    <h4>Important Observations</h4>
+    <ul>
+      <li>The <em>same</em> Fresnel formulas for <span id="m36b"></span> and <span id="m37b"></span> hold — only <span id="m38b"></span> and the refraction angle become complex numbers.</li>
+      <li>For a good conductor, the refracted ray bends to very nearly the normal direction regardless of incidence angle, and almost all incident power reflects — the small fraction that crosses the boundary is absorbed within one skin depth <span id="m39b"></span>.</li>
+      <li>Brewster's angle and the simple real critical angle are properties of lossless dielectric pairs only; they are not generally defined once a conductor is involved.</li>
+    </ul>
+  </div>
+
+  <div class="pill-note">All formulas here assume linear, non-magnetic (<span id="m22"></span>) media — either lossless dielectrics or good conductors — exactly the material choices offered on the Simulator page.</div>
+</section>
+
+<!-- ======================= SIMULATOR ======================= -->
+<section class="page" id="page-sim">
+  <p class="eyebrow">Layer 2 — Interactive Visualization</p>
+  <h1>Single Unified Reflection/Transmission Simulator</h1>
+  <p>One simulator — set the incident angle and the dielectric constants of both media; the ray diagram, both coefficient-vs-angle graphs, and every numerical readout update live, for TE and TM polarization simultaneously.</p>
+
+  <div class="sim-shell">
+    <div class="simcol">
+      <div class="col-head">SIMULATION INPUTS</div>
+      <div class="col-body">
+        <div class="control-block">
+          <h4>Interface</h4>
+          <div class="control-row"><label>Incident angle θᵢ (°) <span id="thetaVal">30.0</span></label><input type="range" id="thetaSlider" min="0" max="89" step="0.5" value="30"></div>
+          <div class="control-row"><label>Frequency f <span id="freqVal">1.00 GHz</span></label><input type="range" id="freqSlider" min="0" max="1" step="0.001" value="0.667"></div>
+        </div>
+        <div class="control-block">
+          <h4>Medium 1</h4>
+          <div class="control-row"><label>Medium 1 type</label>
+            <select id="med1Type"><option value="dielectric">Dielectric</option><option value="conductor">Conductor</option></select>
+          </div>
+          <div class="control-row" id="row1Eps"><label>Dielectric constant ε<sub>r1</sub> <span id="eps1Val">1.00</span></label><input type="range" id="eps1Slider" min="1" max="10" step="0.05" value="1"></div>
+          <div class="control-row" id="row1Sig" style="display:none;"><label>Conductivity σ₁ (S/m) <span id="sig1Val">1.0e7</span></label><input type="range" id="sig1Slider" min="2" max="8" step="0.05" value="7"></div>
+        </div>
+        <div class="control-block">
+          <h4>Medium 2</h4>
+          <div class="control-row"><label>Medium 2 type</label>
+            <select id="med2Type"><option value="dielectric" selected>Dielectric</option><option value="conductor">Conductor</option></select>
+          </div>
+          <div class="control-row" id="row2Eps"><label>Dielectric constant ε<sub>r2</sub> <span id="eps2Val">4.00</span></label><input type="range" id="eps2Slider" min="1" max="10" step="0.05" value="4"></div>
+          <div class="control-row" id="row2Sig" style="display:none;"><label>Conductivity σ₂ (S/m) <span id="sig2Val">1.0e7</span></label><input type="range" id="sig2Slider" min="2" max="8" step="0.05" value="7"></div>
+        </div>
+        <div class="btnrow">
+          <button class="ctl secondary" id="simPng">⤓ PNG</button>
+        </div>
+      </div>
+    </div>
+    <div class="simcol">
+      <div class="col-head" style="text-align:center;">RAY DIAGRAM &amp; COEFFICIENTS vs ANGLE (TE &amp; TM)</div>
+      <div class="col-body" style="padding:.5em;">
+        <div class="sim-canvas-wrap"><canvas id="cvSim" height="640"></canvas></div>
+      </div>
+    </div>
+    <div class="simcol numcol">
+      <div class="col-head">NUMERICAL DATA</div>
+      <div class="col-body">
+        <table class="num-table" id="simReadout"></table>
+      </div>
+    </div>
+  </div>
+
+  <div class="obs-panel" style="margin-top:1em;">
+    <h4>Observation Panel</h4>
+    <p>The upper graph plots the <em>magnitude</em> <span id="m23"></span> so Brewster's angle shows up as a visible dip toward zero on the magenta (TM) curve when both media are lossless dielectrics. The lower graph plots <span id="m24"></span> for both polarizations across the same 0°–90° sweep. When either medium is set to a conductor, both η and Γ become complex — the readout table shows their magnitude and phase angle explicitly.</p>
+    <h4>Interpretation Panel</h4>
+    <p>With two lossless dielectrics, push medium 1's dielectric constant above medium 2's and drag the angle past the critical-angle marker — both curves rise to total internal reflection, exactly the mechanism that keeps light trapped inside an optical fibre. Switch medium 2 to <b>Conductor</b> instead, and |Γ| climbs toward 1 at nearly every angle — almost none of the incident power crosses the boundary; what little does is absorbed within one skin depth, shown in the readout table.</p>
+  </div>
+
+  <div class="panel">
+    <h3>When Do You Get Exactly 100% Transmission or 100% Reflection?</h3>
+    <div class="grid2">
+      <div>
+        <h4 style="color:var(--navy)">100% Transmission — Γ = 0</h4>
+        <p>Two distinct ways to reach it, and they are not the same thing:</p>
+        <ul>
+          <li><b>Impedance matching, any angle:</b> if <span id="m40b"></span> — same medium on both sides, or a coating chosen so its impedance equals the surrounding medium's — <b>both</b> TE and TM transmit fully, at <em>every</em> incidence angle. This is the index-matching principle behind AR coatings.</li>
+          <li><b>Brewster's angle, TM only:</b> at <span id="m41b"></span>, Γ_TM = 0 exactly — but Γ_TE is generally still non-zero at that same angle. Brewster's angle gives zero reflection only for the TM-polarized component, not for unpolarized light as a whole. Try it in the Simulator: set both media as lossless dielectrics, dial the angle to θ_B from the readout table, and watch only the magenta curve touch zero.</li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="color:var(--magenta)">100% Reflection — |Γ| = 1</h4>
+        <p>Two distinct routes here too:</p>
+        <ul>
+          <li><b>Total internal reflection:</b> both media lossless dielectrics, <span id="m42b"></span>, angle beyond the critical angle <span id="m43b"></span> — exact, for both polarizations, no energy lost.</li>
+          <li><b>Reflection off a conductor:</b> switch medium 2 to <b>Conductor</b> — |Γ| approaches 1 at any angle and any polarization, exactly reaching 1 only in the idealized perfect-conductor limit (σ→∞); a real conductor like copper gets to ≈99.99%, with the tiny remainder absorbed in the skin depth, not transmitted onward.</li>
+        </ul>
+      </div>
+    </div>
+    <h4>Which One Do Real-Time Systems Actually Need?</h4>
+    <p>Both — deliberately, depending on the job. Systems that must <b>pass a signal through</b> a boundary are engineered toward Γ→0: this module's radar-radome and solar-AR-coating Applications are exactly that case — reflection is a loss to be minimized. Systems that must <b>keep a signal from crossing</b> a boundary are engineered toward |Γ|→1 instead: optical fibres rely on total internal reflection to guide light with almost no loss over kilometres, radar corner reflectors and mirrors depend on it for a strong return signal, and shielding enclosures/waveguide walls use conductor boundaries specifically because they reflect almost everything. There is rarely a reason to design for anything in between — partial reflection is usually just wasted signal, which is why real engineering designs are pushed deliberately toward one extreme or the other.</p>
+  </div>
+</section>
+
+<!-- ======================= APPLICATIONS ======================= -->
+<section class="page" id="page-apps">
+  <p class="eyebrow">Layer 3 — Applications</p>
+  <h1>Two Real-Time Engineering Cases</h1>
+  <p>Choose a case below — each has its own interactive visualization built from the same Fresnel-equation engine as the Simulator page.</p>
+
+  <div class="vizsub" id="appsubnav">
+    <button data-app="radar" class="active">Case 1 · Radar Signal Through a Dielectric Radome</button>
+    <button data-app="solar">Case 2 · Anti-Reflection Coating on Solar Panels</button>
+  </div>
+
+  <!-- CASE 1: RADOME -->
+  <div class="apppage active" id="apppage-radar">
+    <div class="appcard">
+      <h3 style="color:var(--navy)">Case 1 · Radar Signal Transmission Through a Dielectric Radome</h3>
+      <div class="sim-shell">
+        <div class="simcol">
+          <div class="col-head">SIMULATION INPUTS</div>
+          <div class="col-body">
+            <div class="control-block">
+              <h4>Radome configuration</h4>
+              <div class="control-row"><label>Radome material</label>
+                <select id="radomeMat"></select>
+              </div>
+              <div class="control-row"><label>Radar beam incidence angle θᵢ (°) <span id="radarThetaVal">20.0</span></label>
+                <input type="range" id="radarThetaSlider" min="0" max="89" step="0.5" value="20">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="simcol">
+          <div class="col-head" style="text-align:center;">RADAR BEAM STRIKING RADOME WALL</div>
+          <div class="col-body" style="padding:.5em;">
+            <div class="sim-canvas-wrap"><canvas id="cvRadarApp" height="560"></canvas></div>
+          </div>
+        </div>
+        <div class="simcol numcol">
+          <div class="col-head">NUMERICAL DATA</div>
+          <div class="col-body">
+            <table class="num-table" id="radarReadout"></table>
+          </div>
+        </div>
+      </div>
+      <p><span class="applbl">Physical Principle:</span> A radar dish is enclosed in a dielectric radome for weatherproofing. The radome wall is exactly a dielectric interface (air → radome material → air); every degree the beam is steered off boresight changes its incidence angle on the wall, and with it, the reflection loss.</p>
+      <p><span class="applbl">Mathematical Connection:</span> The same <span id="m25"></span> and <span id="m26"></span> from the Simulator give the fraction of power reflected versus transmitted through the radome wall at the beam's actual incidence angle — directly convertible to <b>insertion loss in dB</b>, <span id="m27"></span>.</p>
+      <p><span class="applbl">Engineering Relevance:</span> Radome designers choose low-loss-tangent, low-dielectric-constant materials (quartz, PTFE composites) and wall thickness specifically to keep insertion loss low across the radar's full scan angle — a beam scanned to a steep incidence angle sees a very different transmission coefficient than one near boresight.</p>
+      <p><span class="applbl">Key Takeaway:</span> Radome insertion loss is not a single number — it is angle-dependent, exactly following the TE/TM Fresnel curves plotted here, which is why radome performance is always specified over a scan-angle range, not at one angle.</p>
+    </div>
+  </div>
+
+  <!-- CASE 2: SOLAR AR COATING -->
+  <div class="apppage" id="apppage-solar">
+    <div class="appcard">
+      <h3 style="color:var(--magenta)">Case 2 · Anti-Reflection Coating on Solar Panels</h3>
+      <div class="sim-shell">
+        <div class="simcol">
+          <div class="col-head">SIMULATION INPUTS</div>
+          <div class="col-body">
+            <div class="control-block">
+              <h4>Panel surface</h4>
+              <div class="control-row"><label>Sunlight incidence angle θᵢ (°) <span id="solarThetaVal">10.0</span></label>
+                <input type="range" id="solarThetaSlider" min="0" max="89" step="0.5" value="10">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="simcol">
+          <div class="col-head" style="text-align:center;">BARE SILICON vs AR-COATED SURFACE</div>
+          <div class="col-body" style="padding:.5em;">
+            <div class="sim-canvas-wrap"><canvas id="cvSolarApp" height="560"></canvas></div>
+          </div>
+        </div>
+        <div class="simcol numcol">
+          <div class="col-head">NUMERICAL DATA</div>
+          <div class="col-body">
+            <table class="num-table" id="solarReadout"></table>
+          </div>
+        </div>
+      </div>
+      <p><span class="applbl">Physical Principle:</span> Bare silicon (n≈3.67) is a huge index mismatch from air (n=1), so a direct air–silicon interface reflects a large fraction of incident sunlight. Inserting a coating whose index sits <em>between</em> air and silicon (e.g. silicon nitride, n≈2.0) reduces that mismatch at the outer surface.</p>
+      <p><span class="applbl">Mathematical Connection:</span> Both surfaces are scored with the same single-interface reflection coefficient <span id="m28"></span> — comparing air→silicon directly against air→coating shows quantitatively how much index-matching alone reduces reflectance, even before accounting for the additional thin-film interference effect a real quarter-wave coating adds on top.</p>
+      <p><span class="applbl">Engineering Relevance:</span> This is the starting design principle behind every anti-reflective coating on solar cells and camera lenses: pick a coating index close to the geometric mean of the two media it sits between, <span id="m29"></span>, to minimize the reflection coefficient at that interface.</p>
+      <p><span class="applbl">Key Takeaway:</span> Even without invoking interference (which needs a coating-thickness parameter beyond this model's scope), index-matching alone cuts front-surface reflection loss substantially — real AR coatings then add a quarter-wave thickness to cancel the remaining reflection by interference.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+/* ============ KaTeX ============ */
+function K(id, tex, display){
+  const el=document.getElementById(id); if(!el) return;
+  try{ katex.render(tex, el, {throwOnError:false, displayMode:!!display}); }catch(e){ el.textContent=tex; }
+}
+K('m1','\\eta_1');K('m2','\\eta_2');
+K('m3','E_1^{\\parallel}=E_2^{\\parallel}\\ ,\\quad H_1^{\\parallel}=H_2^{\\parallel}\\ \\ \\Longrightarrow\\ \\ \\Gamma=\\dfrac{\\eta_2-\\eta_1}{\\eta_2+\\eta_1}\\ ,\\quad \\tau=1+\\Gamma=\\dfrac{2\\eta_2}{\\eta_2+\\eta_1}',true);
+K('m4','\\eta_1');K('m5','\\eta_2');
+K('m6','\\boxed{\\Gamma=\\dfrac{\\eta_2-\\eta_1}{\\eta_2+\\eta_1}\\ ,\\qquad \\tau=\\dfrac{2\\eta_2}{\\eta_2+\\eta_1}\\ ,\\qquad \\eta=\\dfrac{\\eta_0}{\\sqrt{\\varepsilon_r}}}',true);
+K('m7','n_1\\sin\\theta_i=n_2\\sin\\theta_t',true);
+K('m8','n_i=\\sqrt{\\varepsilon_{ri}}');K('m9','i');
+K('m10','\\Gamma_{TE}=\\dfrac{\\eta_2\\cos\\theta_i-\\eta_1\\cos\\theta_t}{\\eta_2\\cos\\theta_i+\\eta_1\\cos\\theta_t}\\ ,\\qquad \\tau_{TE}=\\dfrac{2\\eta_2\\cos\\theta_i}{\\eta_2\\cos\\theta_i+\\eta_1\\cos\\theta_t}',true);
+K('m11','\\Gamma_{TM}=\\dfrac{\\eta_2\\cos\\theta_t-\\eta_1\\cos\\theta_i}{\\eta_2\\cos\\theta_t+\\eta_1\\cos\\theta_i}\\ ,\\qquad \\tau_{TM}=\\dfrac{2\\eta_2\\cos\\theta_i}{\\eta_2\\cos\\theta_t+\\eta_1\\cos\\theta_i}',true);
+K('m12','\\theta_i=\\theta_t=0');
+K('m13','\\theta_B=\\tan^{-1}(n_2/n_1)');K('m14','\\Gamma_{TM}=0');
+K('m15','\\theta_c=\\sin^{-1}(n_2/n_1)');K('m16','n_1>n_2');K('m17','\\cos\\theta_t');K('m18','|\\Gamma|=1');
+K('m19','R+T=1');
+K('m20','\\theta_t,\\ \\eta_1,\\eta_2,\\ \\Gamma,\\ \\tau');K('m21','\\theta_t');
+K('m22','\\mu_{r1}=\\mu_{r2}=1');
+K('m23','\\Gamma(\\theta_i)');K('m24','\\tau(\\theta_i)');
+K('m25','\\Gamma(\\theta_i)');K('m26','\\tau(\\theta_i)');
+K('m27','\\text{IL(dB)}=-10\\log_{10}T');
+K('m28','\\Gamma=(\\eta_2-\\eta_1)/(\\eta_2+\\eta_1)');
+K('m29','n_{coat}\\approx\\sqrt{n_{air}\\,n_{Si}}');
+K('m30b','\\varepsilon_r');K('m31b','\\sigma');
+K('m32b','\\varepsilon_c=\\varepsilon_r\\varepsilon_0-j\\sigma/\\omega');
+K('m33b','\\gamma=\\alpha+j\\beta');K('m34b','\\eta');
+K('m35b','N=\\sqrt{\\varepsilon_r-j\\dfrac{\\sigma}{\\omega\\varepsilon_0}}\\ ,\\qquad \\eta=\\dfrac{\\eta_0}{N}\\ \\ \\text{(complex)}',true);
+K('m36b','\\Gamma');K('m37b','\\tau');K('m38b','\\eta');K('m39b','\\delta=1/\\alpha');
+K('m40b','\\eta_1=\\eta_2');
+K('m41b','\\theta_i=\\theta_B=\\tan^{-1}(n_2/n_1)');
+K('m42b','n_1>n_2');K('m43b','\\theta_c=\\sin^{-1}(n_2/n_1)');
+
+/* ============ Tab nav ============ */
+document.getElementById('mainNav').addEventListener('click', e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  document.querySelectorAll('#mainNav button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+b.dataset.page).classList.add('active');
+});
+document.getElementById('appsubnav').addEventListener('click', e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  document.querySelectorAll('#appsubnav button').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.querySelectorAll('.apppage').forEach(p=>p.classList.remove('active'));
+  document.getElementById('apppage-'+b.dataset.app).classList.add('active');
+});
+function pngExport(canvas,name){ const a=document.createElement('a'); a.download=name+'.png'; a.href=canvas.toDataURL('image/png'); a.click(); }
+
+/* ============ Physics engine ============ */
+const ETA0 = 376.730313668;
+function fmt(v, unit){
+  if(!isFinite(v)) return '∞';
+  const av=Math.abs(v);
+  if(av===0) return '0'+(unit? ' '+unit:'');
+  const exp=Math.floor(Math.log10(av));
+  const s = (exp>=6||exp<=-4) ? v.toExponential(2) : v.toFixed(Math.max(0,3-exp));
+  return s+(unit? ' '+unit:'');
+}
+function fresnel(epsR1, epsR2, thetaIdeg){
+  const n1=Math.sqrt(epsR1), n2=Math.sqrt(epsR2);
+  const thetaI = thetaIdeg*Math.PI/180;
+  const eta1 = ETA0/n1, eta2 = ETA0/n2;
+  const sinThetaT = (n1/n2)*Math.sin(thetaI);
+  const isTIR = Math.abs(sinThetaT) > 1;
+  let thetaT=NaN, cosThetaT=NaN, GammaTE, TauTE, GammaTM, TauTM;
+  const cosThetaI = Math.cos(thetaI);
+  if(isTIR){
+    GammaTE = (n1>n2)? -1 : 1;
+    GammaTM = (n1>n2)? -1 : 1;
+    TauTE = 0; TauTM = 0;
+  } else {
+    thetaT = Math.asin(sinThetaT);
+    cosThetaT = Math.cos(thetaT);
+    GammaTE = (eta2*cosThetaI - eta1*cosThetaT)/(eta2*cosThetaI + eta1*cosThetaT);
+    TauTE = 2*eta2*cosThetaI/(eta2*cosThetaI + eta1*cosThetaT);
+    GammaTM = (eta2*cosThetaT - eta1*cosThetaI)/(eta2*cosThetaT + eta1*cosThetaI);
+    TauTM = 2*eta2*cosThetaI/(eta2*cosThetaT + eta1*cosThetaI);
+  }
+  const R_TE = GammaTE*GammaTE, T_TE = 1-R_TE;
+  const R_TM = GammaTM*GammaTM, T_TM = 1-R_TM;
+  const thetaC = (n1>n2)? Math.asin(n2/n1)*180/Math.PI : NaN;
+  const thetaB = Math.atan(n2/n1)*180/Math.PI;
+  return {n1,n2,eta1,eta2,thetaT:thetaT*180/Math.PI,isTIR,GammaTE,TauTE,GammaTM,TauTM,R_TE,T_TE,R_TM,T_TM,thetaC,thetaB};
+}
+
+/* ---- General complex-media engine (Simulator only): supports dielectric OR conductor media ---- */
+const EPS0=8.854e-12, MU0=4*Math.PI*1e-7;
+function cAdd(a,b){return {re:a.re+b.re, im:a.im+b.im};}
+function cSub(a,b){return {re:a.re-b.re, im:a.im-b.im};}
+function cMul(a,b){return {re:a.re*b.re-a.im*b.im, im:a.re*b.im+a.im*b.re};}
+function cDiv(a,b){const d=b.re*b.re+b.im*b.im; return {re:(a.re*b.re+a.im*b.im)/d, im:(a.im*b.re-a.re*b.im)/d};}
+function cSqrt(a){const r=Math.hypot(a.re,a.im), th=Math.atan2(a.im,a.re); const sr=Math.sqrt(r); return {re:sr*Math.cos(th/2), im:sr*Math.sin(th/2)};}
+function cScale(a,s){return {re:a.re*s, im:a.im*s};}
+function cAbs(a){return Math.hypot(a.re,a.im);}
+function cArgDeg(a){return Math.atan2(a.im,a.re)*180/Math.PI;}
+function mediumIndex(type, epsR, sigma, omega){
+  // complex relative permittivity: epsR - j*sigma/(omega*eps0); N = sqrt(epsR_complex)  [mu_r = 1]
+  const epsC = {re: (type==='conductor'? 1 : epsR), im: (type==='conductor'? -sigma/(omega*EPS0) : 0)};
+  return cSqrt(epsC);
+}
+function fresnelGeneral(m1, m2, thetaIdeg, freqHz){
+  const omega = 2*Math.PI*freqHz;
+  const N1 = mediumIndex(m1.type, m1.epsR, m1.sigma, omega);
+  const N2 = mediumIndex(m2.type, m2.epsR, m2.sigma, omega);
+  const thetaI = thetaIdeg*Math.PI/180;
+  const sinThetaI = Math.sin(thetaI), cosThetaI = Math.cos(thetaI);
+  const sinThetaT = cScale(cDiv(N1,N2), sinThetaI);
+  const cosThetaT = cSqrt(cSub({re:1,im:0}, cMul(sinThetaT,sinThetaT)));
+  const eta0c = {re:ETA0, im:0};
+  const eta1 = cDiv(eta0c,N1), eta2 = cDiv(eta0c,N2);
+  const num_TE = cSub(cScale(eta2,cosThetaI), cMul(eta1,cosThetaT));
+  const den_TE = cAdd(cScale(eta2,cosThetaI), cMul(eta1,cosThetaT));
+  const GammaTE = cDiv(num_TE,den_TE);
+  const TauTE = cDiv(cScale(eta2,2*cosThetaI), den_TE);
+  const num_TM = cSub(cMul(eta2,cosThetaT), cScale(eta1,cosThetaI));
+  const den_TM = cAdd(cMul(eta2,cosThetaT), cScale(eta1,cosThetaI));
+  const GammaTM = cDiv(num_TM,den_TM);
+  const TauTM = cDiv(cScale(eta2,2*cosThetaI), den_TM);
+  const R_TE = cAbs(GammaTE)**2, T_TE = 1-R_TE;
+  const R_TM = cAbs(GammaTM)**2, T_TM = 1-R_TM;
+  // display refracted angle: real part of the complex refraction angle (exact for lossless media; a good approximation, ~0 deep inside a conductor, for lossy media)
+  const thetaT_disp = Math.asin(Math.max(-1,Math.min(1,sinThetaT.re)))*180/Math.PI;
+  const bothLossless = (m1.type==='dielectric' && m2.type==='dielectric');
+  const n1r = N1.re, n2r = N2.re;
+  const thetaC = (bothLossless && n1r>n2r)? Math.asin(n2r/n1r)*180/Math.PI : NaN;
+  const thetaB = (bothLossless)? Math.atan(n2r/n1r)*180/Math.PI : NaN;
+  // skin depth of a conductor medium (if applicable): delta = 1/alpha, alpha=Im(gamma)=... use alpha=omega*Im(N)/c
+  const c0 = 1/Math.sqrt(MU0*EPS0);
+  const alpha2 = (m2.type==='conductor')? omega*N2.im/c0 : NaN;
+  const delta2 = isFinite(alpha2)&&alpha2>0? 1/alpha2 : NaN;
+  return {N1,N2,eta1,eta2,GammaTE,TauTE,GammaTM,TauTM,R_TE,T_TE,R_TM,T_TM,thetaT_disp,thetaC,thetaB,delta2};
+}
+
+/* ============ MAIN SIMULATOR ============ */
+(function(){
+  const cv=document.getElementById('cvSim'), ctx=cv.getContext('2d');
+  const thetaSlider=document.getElementById('thetaSlider'), freqSlider=document.getElementById('freqSlider');
+  const thetaVal=document.getElementById('thetaVal'), freqVal=document.getElementById('freqVal');
+  const med1Type=document.getElementById('med1Type'), med2Type=document.getElementById('med2Type');
+  const eps1Slider=document.getElementById('eps1Slider'), eps2Slider=document.getElementById('eps2Slider');
+  const sig1Slider=document.getElementById('sig1Slider'), sig2Slider=document.getElementById('sig2Slider');
+  const eps1Val=document.getElementById('eps1Val'), eps2Val=document.getElementById('eps2Val');
+  const sig1Val=document.getElementById('sig1Val'), sig2Val=document.getElementById('sig2Val');
+  const row1Eps=document.getElementById('row1Eps'), row1Sig=document.getElementById('row1Sig');
+  const row2Eps=document.getElementById('row2Eps'), row2Sig=document.getElementById('row2Sig');
+  const CH=640;
+  function resize(){ cv.width=cv.clientWidth*devicePixelRatio; cv.height=CH*devicePixelRatio; cv.style.height=CH+'px'; }
+  function titleBar(text,w,sc){
+    ctx.fillStyle='#123a7a'; ctx.font='bold '+(14.5*sc)+'px Georgia'; ctx.fillText(text, 14*sc, 24*sc);
+    ctx.strokeStyle='rgba(18,58,122,0.15)'; ctx.lineWidth=1*sc; ctx.beginPath(); ctx.moveTo(0,34*sc); ctx.lineTo(w,34*sc); ctx.stroke();
+  }
+  function syncTypeUI(){
+    row1Eps.style.display = med1Type.value==='dielectric'? 'flex':'none';
+    row1Sig.style.display = med1Type.value==='conductor'? 'flex':'none';
+    row2Eps.style.display = med2Type.value==='dielectric'? 'flex':'none';
+    row2Sig.style.display = med2Type.value==='conductor'? 'flex':'none';
+  }
+  function freqFromSlider(v){ return Math.pow(10, 6 + v*6); } // 1 MHz .. 1 THz
+  function sigFromSlider(v){ return Math.pow(10, v); } // 10^2 .. 10^8 S/m
+  function getMedium(typeSel, epsSlider, sigSlider){
+    return { type: typeSel.value, epsR: parseFloat(epsSlider.value), sigma: sigFromSlider(parseFloat(sigSlider.value)) };
+  }
+  function drawRayDiagram(top,gh,w,sc,m1,m2,thetaDeg,F){
+    const originX=w*0.5, originY=top+gh*0.5;
+    ctx.fillStyle='rgba(18,58,122,0.06)'; ctx.fillRect(0,top,w,gh*0.5);
+    ctx.fillStyle='rgba(194,24,91,0.06)'; ctx.fillRect(0,originY,w,gh*0.5);
+    ctx.strokeStyle='#e8720c'; ctx.lineWidth=3*sc; ctx.beginPath(); ctx.moveTo(20*sc,originY); ctx.lineTo(w-20*sc,originY); ctx.stroke();
+    const lbl1 = m1.type==='conductor'? ('medium 1  (conductor, σ₁='+m1.sigma.toExponential(1)+' S/m)') : ('medium 1  (ε_r1='+m1.epsR.toFixed(2)+')');
+    const lbl2 = m2.type==='conductor'? ('medium 2  (conductor, σ₂='+m2.sigma.toExponential(1)+' S/m)') : ('medium 2  (ε_r2='+m2.epsR.toFixed(2)+')');
+    ctx.fillStyle='#123a7a'; ctx.font='bold '+(11*sc)+'px Georgia'; ctx.fillText(lbl1, 20*sc, top+16*sc);
+    ctx.fillStyle='#c2185b'; ctx.fillText(lbl2, 20*sc, top+gh-8*sc);
+    ctx.strokeStyle='rgba(18,58,122,0.3)'; ctx.setLineDash([3,4]); ctx.lineWidth=1.2*sc;
+    ctx.beginPath(); ctx.moveTo(originX,top+8*sc); ctx.lineTo(originX,top+gh-8*sc); ctx.stroke(); ctx.setLineDash([]);
+    const R = gh*0.38;
+    const thetaRad = thetaDeg*Math.PI/180;
+    const ix = originX - Math.sin(thetaRad)*R, iy = originY - Math.cos(thetaRad)*R;
+    drawArrow(ix,iy,originX,originY,'#123a7a',2.6,sc);
+    const rx = originX + Math.sin(thetaRad)*R, ry = originY - Math.cos(thetaRad)*R;
+    drawArrow(originX,originY,rx,ry,'#123a7a',2.2,sc);
+    const goodConductorMinimalTransmission = (m2.type==='conductor' && F.T_TE<0.02 && F.T_TM<0.02);
+    if(!goodConductorMinimalTransmission){
+      const thetaT = F.thetaT_disp*Math.PI/180;
+      const tx = originX + Math.sin(thetaT)*R, ty = originY + Math.cos(thetaT)*R;
+      drawArrow(originX,originY,tx,ty,'#c2185b',2.6,sc);
+    } else {
+      ctx.fillStyle='#c2185b'; ctx.font='bold '+(11*sc)+'px Georgia'; ctx.fillText('near-total reflection — conductor absorbs within a skin depth', originX+10*sc, originY+40*sc);
+    }
+    ctx.fillStyle='#5b6b7c'; ctx.font=(10.5*sc)+'px Georgia'; ctx.textAlign='center';
+    ctx.fillText('θᵢ', originX-14*sc, originY-14*sc);
+    ctx.fillText('θᵣ', originX+14*sc, originY-14*sc);
+    if(!goodConductorMinimalTransmission) ctx.fillText('θₜ', originX+14*sc, originY+22*sc);
+    ctx.textAlign='left';
+  }
+  function drawArrow(x1,y1,x2,y2,color,lw,sc){
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=lw*sc;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    const ang = Math.atan2(y2-y1,x2-x1);
+    ctx.beginPath(); ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-9*sc*Math.cos(ang-0.4), y2-9*sc*Math.sin(ang-0.4));
+    ctx.lineTo(x2-9*sc*Math.cos(ang+0.4), y2-9*sc*Math.sin(ang+0.4));
+    ctx.closePath(); ctx.fill();
+  }
+  function drawGraph(top,gh,w,sc,label,ylo,yhi,m1,m2,freqHz,curTheta,fnTE,fnTM,ylab){
+    ctx.strokeStyle='rgba(18,58,122,0.18)'; ctx.lineWidth=1*sc; ctx.strokeRect(56*sc,top,w-76*sc,gh);
+    ctx.fillStyle='#123a7a'; ctx.font='bold '+(12*sc)+'px Georgia'; ctx.fillText(label, 56*sc, top-8*sc);
+    ctx.fillStyle='#8a97a6'; ctx.font=(9.5*sc)+'px Georgia'; ctx.textAlign='center';
+    for(let d=0; d<=90; d+=15){
+      const px=56*sc+(d/90)*(w-76*sc);
+      ctx.beginPath(); ctx.moveTo(px,top+gh); ctx.lineTo(px,top+gh+4*sc); ctx.strokeStyle='rgba(18,58,122,0.3)'; ctx.stroke();
+      ctx.fillText(d+'°', px, top+gh+16*sc);
+    }
+    ctx.textAlign='right';
+    ctx.fillText(yhi.toFixed(1), 52*sc, top+8*sc);
+    ctx.fillText(ylo.toFixed(1), 52*sc, top+gh);
+    ctx.save(); ctx.translate(16*sc, top+gh/2); ctx.rotate(-Math.PI/2); ctx.textAlign='center'; ctx.fillText(ylab, 0, 0); ctx.restore();
+    ctx.textAlign='left';
+    ctx.fillStyle='#5b6b7c'; ctx.font=(10*sc)+'px Georgia'; ctx.textAlign='center';
+    ctx.fillText('incident angle θᵢ (degrees)', 56*sc+(w-76*sc)/2, top+gh+32*sc); ctx.textAlign='left';
+    function plot(fn,color){
+      ctx.strokeStyle=color; ctx.lineWidth=2.4*sc; ctx.beginPath();
+      for(let d=0; d<=89.5; d+=0.5){
+        const F=fresnelGeneral(m1,m2,d,freqHz); const v=fn(F);
+        const px=56*sc+(d/90)*(w-76*sc);
+        const py=top+gh-((v-ylo)/(yhi-ylo))*gh;
+        if(d===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+      }
+      ctx.stroke();
+    }
+    plot(fnTE,'#123a7a'); plot(fnTM,'#c2185b');
+    const px=56*sc+(curTheta/90)*(w-76*sc);
+    ctx.strokeStyle='rgba(232,114,12,0.6)'; ctx.setLineDash([3,4]); ctx.lineWidth=1.4*sc;
+    ctx.beginPath(); ctx.moveTo(px,top); ctx.lineTo(px,top+gh); ctx.stroke(); ctx.setLineDash([]);
+  }
+  function draw(){
+    resize();
+    const w=cv.width,h=cv.height,sc=devicePixelRatio; ctx.clearRect(0,0,w,h);
+    syncTypeUI();
+    const theta=parseFloat(thetaSlider.value);
+    const freqHz = freqFromSlider(parseFloat(freqSlider.value));
+    thetaVal.textContent=theta.toFixed(1);
+    freqVal.textContent = fmt(freqHz,'Hz');
+    eps1Val.textContent=parseFloat(eps1Slider.value).toFixed(2);
+    eps2Val.textContent=parseFloat(eps2Slider.value).toFixed(2);
+    sig1Val.textContent=sigFromSlider(parseFloat(sig1Slider.value)).toExponential(1);
+    sig2Val.textContent=sigFromSlider(parseFloat(sig2Slider.value)).toExponential(1);
+    const m1 = getMedium(med1Type, eps1Slider, sig1Slider);
+    const m2 = getMedium(med2Type, eps2Slider, sig2Slider);
+    const F = fresnelGeneral(m1,m2,theta,freqHz);
+    titleBar('DIELECTRIC / CONDUCTOR INTERFACE — INCIDENT / REFLECTED / TRANSMITTED RAYS', w, sc);
+
+    drawRayDiagram(40*sc, h*0.30, w, sc, m1, m2, theta, F);
+    drawGraph(h*0.46, h*0.20, w, sc, '|Γ| (reflection coefficient magnitude) vs incident angle (TE navy, TM magenta)', 0, 1, m1, m2, freqHz, theta, f=>cAbs(f.GammaTE), f=>cAbs(f.GammaTM), '|Γ|');
+    drawGraph(h*0.76, h*0.20, w, sc, '|τ| (transmission coefficient magnitude) vs incident angle (TE navy, TM magenta)', 0, 2.2, m1, m2, freqHz, theta, f=>cAbs(f.TauTE), f=>cAbs(f.TauTM), '|τ|');
+
+    const rows = [
+      ['Refracted angle θₜ', F.thetaT_disp.toFixed(2)+'°'+(m2.type==='conductor'? ' (≈normal, good conductor)':'')],
+      ['Impedance η₁', fmt(cAbs(F.eta1),'Ω')+' ∠'+cArgDeg(F.eta1).toFixed(1)+'°'],
+      ['Impedance η₂', fmt(cAbs(F.eta2),'Ω')+' ∠'+cArgDeg(F.eta2).toFixed(1)+'°'],
+      ['Γ (TE)', cAbs(F.GammaTE).toFixed(4)+' ∠'+cArgDeg(F.GammaTE).toFixed(1)+'°'],
+      ['Γ (TM)', cAbs(F.GammaTM).toFixed(4)+' ∠'+cArgDeg(F.GammaTM).toFixed(1)+'°'],
+      ['τ (TE)', cAbs(F.TauTE).toFixed(4)+' ∠'+cArgDeg(F.TauTE).toFixed(1)+'°'],
+      ['τ (TM)', cAbs(F.TauTM).toFixed(4)+' ∠'+cArgDeg(F.TauTM).toFixed(1)+'°'],
+      ['Power reflected R (TE)', (F.R_TE*100).toFixed(2)+' %'],
+      ['Power transmitted T (TE)', (F.T_TE*100).toFixed(2)+' %'],
+      ['Power reflected R (TM)', (F.R_TM*100).toFixed(2)+' %'],
+      ['Power transmitted T (TM)', (F.T_TM*100).toFixed(2)+' %'],
+      ['Critical angle θ_c', isFinite(F.thetaC)? F.thetaC.toFixed(2)+'°' : 'n/a'],
+      ["Brewster's angle θ_B", isFinite(F.thetaB)? F.thetaB.toFixed(2)+'°' : 'n/a (lossy medium)'],
+      ['Skin depth δ (medium 2)', isFinite(F.delta2)? fmt(F.delta2,'m') : 'n/a (not a conductor)']
+    ];
+    document.getElementById('simReadout').innerHTML = rows.map(r=>`<tr><td class="lbl">${r[0]}</td><td class="val">${r[1]}</td></tr>`).join('');
+  }
+  [thetaSlider,freqSlider,eps1Slider,eps2Slider,sig1Slider,sig2Slider].forEach(el=>el.addEventListener('input',draw));
+  [med1Type,med2Type].forEach(el=>el.addEventListener('change',draw));
+  document.getElementById('simPng').addEventListener('click', ()=>pngExport(cv,'reflection_transmission_simulator'));
+  window.addEventListener('resize', draw);
+  draw();
+})();
+
+/* ============ APPLICATION 1: RADAR / RADOME ============ */
+(function(){
+  const cv=document.getElementById('cvRadarApp'), ctx=cv.getContext('2d');
+  const matSel=document.getElementById('radomeMat'), thetaSlider=document.getElementById('radarThetaSlider'), thetaVal=document.getElementById('radarThetaVal');
+  const RADOME_MATS = [ ['Quartz (εr=3.8)',3.8], ['PTFE / Teflon composite (εr=2.1)',2.1], ['Fiberglass laminate (εr=4.4)',4.4], ['Kevlar composite (εr=3.5)',3.5] ];
+  matSel.innerHTML = RADOME_MATS.map((m,i)=>`<option value="${i}">${m[0]}</option>`).join('');
+  const CH=560;
+  function resize(){ cv.width=cv.clientWidth*devicePixelRatio; cv.height=CH*devicePixelRatio; cv.style.height=CH+'px'; }
+  function titleBar(text,w,sc){
+    ctx.fillStyle='#123a7a'; ctx.font='bold '+(14.5*sc)+'px Georgia'; ctx.fillText(text, 14*sc, 24*sc);
+    ctx.strokeStyle='rgba(18,58,122,0.15)'; ctx.lineWidth=1*sc; ctx.beginPath(); ctx.moveTo(0,34*sc); ctx.lineTo(w,34*sc); ctx.stroke();
+  }
+  function drawArrow(x1,y1,x2,y2,color,lw,sc){
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=lw*sc;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    const ang=Math.atan2(y2-y1,x2-x1);
+    ctx.beginPath(); ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-9*sc*Math.cos(ang-0.4), y2-9*sc*Math.sin(ang-0.4));
+    ctx.lineTo(x2-9*sc*Math.cos(ang+0.4), y2-9*sc*Math.sin(ang+0.4));
+    ctx.closePath(); ctx.fill();
+  }
+  function draw(){
+    resize();
+    const w=cv.width,h=cv.height,sc=devicePixelRatio; ctx.clearRect(0,0,w,h);
+    const mat = RADOME_MATS[parseInt(matSel.value)];
+    const theta = parseFloat(thetaSlider.value);
+    thetaVal.textContent = theta.toFixed(1);
+    const F = fresnel(1, mat[1], theta);
+    titleBar('RADAR DISH INSIDE A '+mat[0].toUpperCase()+' RADOME', w, sc);
+
+    const dishX=w*0.20, dishY=h*0.42;
+    ctx.strokeStyle='#123a7a'; ctx.lineWidth=3*sc;
+    ctx.beginPath(); ctx.arc(dishX,dishY,60*sc,-0.9,0.9); ctx.stroke();
+    ctx.fillStyle='#123a7a'; ctx.font='bold '+(11*sc)+'px Georgia'; ctx.fillText('radar antenna', dishX-40*sc, dishY+80*sc);
+    const wallX=w*0.62;
+    ctx.strokeStyle='#e8720c'; ctx.lineWidth=6*sc;
+    ctx.beginPath(); ctx.arc(w*0.2,h*0.42,w*0.42, -0.75, 0.75); ctx.stroke();
+    ctx.fillStyle='#e8720c'; ctx.font='bold '+(11*sc)+'px Georgia'; ctx.fillText('radome wall ('+mat[0]+')', wallX-40*sc, h*0.12);
+
+    const hx = wallX, hy = h*0.42;
+    const thetaRad = theta*Math.PI/180;
+    drawArrow(dishX+55*sc, dishY, hx-40*sc, hy, '#123a7a', 2.6, sc);
+    const reflX = hx-40*sc + Math.sin(thetaRad)*70*sc, reflY = hy - Math.cos(thetaRad)*70*sc;
+    drawArrow(hx-40*sc,hy, reflX, reflY, '#123a7a', 2, sc);
+    if(!F.isTIR){
+      const thetaT = F.thetaT*Math.PI/180;
+      const outX = hx-40*sc + Math.sin(thetaT)*90*sc, outY = hy + Math.cos(thetaT)*90*sc;
+      drawArrow(hx-40*sc,hy, outX, outY, '#c2185b', 2.6, sc);
+      ctx.fillStyle='#c2185b'; ctx.font='bold '+(11*sc)+'px Georgia'; ctx.fillText('transmitted', outX+6*sc, outY);
+    }
+    ctx.fillStyle='#123a7a'; ctx.font=(10.5*sc)+'px Georgia'; ctx.fillText('reflected', reflX+6*sc, reflY);
+
+    const IL_TE = -10*Math.log10(Math.max(F.T_TE,1e-12));
+    const IL_TM = -10*Math.log10(Math.max(F.T_TM,1e-12));
+    const rows=[
+      ['Refracted angle θₜ', F.isTIR? 'TIR' : F.thetaT.toFixed(2)+'°'],
+      ['η₁ (air)', fmt(F.eta1,'Ω')],
+      ['η₂ (radome)', fmt(F.eta2,'Ω')],
+      ['Γ (TE) / Γ (TM)', F.GammaTE.toFixed(3)+' / '+F.GammaTM.toFixed(3)],
+      ['τ (TE) / τ (TM)', F.TauTE.toFixed(3)+' / '+F.TauTM.toFixed(3)],
+      ['Power transmit. T_TE', (F.T_TE*100).toFixed(1)+' %'],
+      ['Power transmit. T_TM', (F.T_TM*100).toFixed(1)+' %'],
+      ['Insertion loss (TE)', IL_TE.toFixed(2)+' dB'],
+      ['Insertion loss (TM)', IL_TM.toFixed(2)+' dB']
+    ];
+    document.getElementById('radarReadout').innerHTML = rows.map(r=>`<tr><td class="lbl">${r[0]}</td><td class="val">${r[1]}</td></tr>`).join('');
+  }
+  [matSel,thetaSlider].forEach(el=>el.addEventListener('input',draw));
+  window.addEventListener('resize', draw);
+  draw();
+})();
+
+/* ============ APPLICATION 2: SOLAR AR COATING ============ */
+(function(){
+  const cv=document.getElementById('cvSolarApp'), ctx=cv.getContext('2d');
+  const thetaSlider=document.getElementById('solarThetaSlider'), thetaVal=document.getElementById('solarThetaVal');
+  const CH=560;
+  const SILICON_EPS = 13.47; // n≈3.67
+  const COATING_EPS = 4.0;   // Si3N4, n≈2.0
+  function resize(){ cv.width=cv.clientWidth*devicePixelRatio; cv.height=CH*devicePixelRatio; cv.style.height=CH+'px'; }
+  function titleBar(text,w,sc){
+    ctx.fillStyle='#123a7a'; ctx.font='bold '+(14.5*sc)+'px Georgia'; ctx.fillText(text, 14*sc, 24*sc);
+    ctx.strokeStyle='rgba(18,58,122,0.15)'; ctx.lineWidth=1*sc; ctx.beginPath(); ctx.moveTo(0,34*sc); ctx.lineTo(w,34*sc); ctx.stroke();
+  }
+  function drawArrow(x1,y1,x2,y2,color,lw,sc){
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=lw*sc;
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    const ang=Math.atan2(y2-y1,x2-x1);
+    ctx.beginPath(); ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-9*sc*Math.cos(ang-0.4), y2-9*sc*Math.sin(ang-0.4));
+    ctx.lineTo(x2-9*sc*Math.cos(ang+0.4), y2-9*sc*Math.sin(ang+0.4));
+    ctx.closePath(); ctx.fill();
+  }
+  function drawSun(x,y,r,sc){
+    const grad = ctx.createRadialGradient(x,y,0,x,y,r*1.8);
+    grad.addColorStop(0,'#ffe37a'); grad.addColorStop(1,'rgba(255,227,122,0)');
+    ctx.fillStyle=grad; ctx.beginPath(); ctx.arc(x,y,r*1.8,0,7); ctx.fill();
+    ctx.fillStyle='#f5a623'; ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill();
+    ctx.strokeStyle='#f5a623'; ctx.lineWidth=2.2*sc;
+    for(let i=0;i<10;i++){ const ang=i/10*2*Math.PI;
+      ctx.beginPath(); ctx.moveTo(x+Math.cos(ang)*(r+5*sc), y+Math.sin(ang)*(r+5*sc));
+      ctx.lineTo(x+Math.cos(ang)*(r+15*sc), y+Math.sin(ang)*(r+15*sc)); ctx.stroke(); }
+  }
+  function panel(top,gh,w,sc,label,epsR,theta,panelColor,panelSheen){
+    // sky background
+    const skyGrad = ctx.createLinearGradient(0,top,0,top+gh*0.62);
+    skyGrad.addColorStop(0,'#cfe8fb'); skyGrad.addColorStop(1,'#eef6fd');
+    ctx.fillStyle=skyGrad; ctx.fillRect(0,top,w,gh*0.62);
+    const originY=top+gh*0.62;
+    const F = fresnel(1, epsR, theta);
+    const thetaRad=theta*Math.PI/180;
+    const originX=w*0.52;
+    const R=gh*0.44;
+    // sun positioned per incidence angle (higher theta -> lower/more grazing sun)
+    const sunX = originX - Math.sin(thetaRad)*R*1.35, sunY = originY - Math.cos(thetaRad)*R*1.35;
+    drawSun(Math.max(sunX, 34*sc), Math.max(sunY, top+26*sc), 15*sc, sc);
+    // ground strip + solar panel (tilted slightly for realism)
+    ctx.fillStyle='#dfe6ea'; ctx.fillRect(0, originY, w, gh-gh*0.62);
+    const panelW = w*0.62, panelH = 16*sc, panelX = originX-panelW/2, tilt = -0.12;
+    ctx.save(); ctx.translate(originX, originY); ctx.rotate(tilt); ctx.translate(-panelW/2,0);
+    // frame
+    ctx.fillStyle='#2a3540'; ctx.fillRect(-4*sc,-4*sc,panelW+8*sc,panelH+8*sc);
+    // cells
+    const grad2 = ctx.createLinearGradient(0,0,panelW,0);
+    grad2.addColorStop(0,panelColor[0]); grad2.addColorStop(1,panelColor[1]);
+    ctx.fillStyle=grad2; ctx.fillRect(0,0,panelW,panelH);
+    ctx.strokeStyle='rgba(255,255,255,0.35)'; ctx.lineWidth=1*sc;
+    const cells=8;
+    for(let i=1;i<cells;i++){ const gx=(i/cells)*panelW; ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,panelH); ctx.stroke(); }
+    if(panelSheen){ ctx.fillStyle='rgba(150,180,255,0.25)'; ctx.fillRect(0,0,panelW,panelH*0.4); }
+    ctx.restore();
+    // support stand
+    ctx.strokeStyle='#5b6b7c'; ctx.lineWidth=3*sc;
+    ctx.beginPath(); ctx.moveTo(originX,originY+panelH*0.5); ctx.lineTo(originX,originY+gh*0.22); ctx.stroke();
+    ctx.fillStyle='#123a7a'; ctx.font='bold '+(12*sc)+'px Georgia'; ctx.fillText(label, 20*sc, top+20*sc);
+    // rays
+    drawArrow(sunX,sunY, originX, originY, '#f5a623', 2.6, sc);
+    const reflLenPx = (14+F.R_TE*70)*sc;
+    drawArrow(originX,originY, originX+Math.sin(thetaRad)*reflLenPx, originY-Math.cos(thetaRad)*reflLenPx, '#123a7a', 1+F.R_TE*4, sc);
+    ctx.fillStyle='#123a7a'; ctx.font=(10*sc)+'px Georgia';
+    ctx.fillText((F.R_TE*100).toFixed(1)+'% reflected', originX+Math.sin(thetaRad)*reflLenPx+6*sc, originY-Math.cos(thetaRad)*reflLenPx);
+    if(!F.isTIR){
+      // absorbed glow into the panel instead of a long ray (light is absorbed by silicon)
+      const glowR = (8+F.T_TE*16)*sc;
+      const glow = ctx.createRadialGradient(originX,originY,0,originX,originY,glowR);
+      glow.addColorStop(0,'rgba(255,227,122,0.9)'); glow.addColorStop(1,'rgba(255,227,122,0)');
+      ctx.fillStyle=glow; ctx.beginPath(); ctx.arc(originX,originY,glowR,0,7); ctx.fill();
+    }
+    ctx.fillStyle='#5b6b7c'; ctx.font=(10.5*sc)+'px Georgia';
+    ctx.fillText('reflectance R = '+(F.R_TE*100).toFixed(1)+'%  ·  absorbed/transmitted T = '+(F.T_TE*100).toFixed(1)+'%  (TE)', 20*sc, top+gh-6*sc);
+    return F;
+  }
+  function draw(){
+    resize();
+    const w=cv.width,h=cv.height,sc=devicePixelRatio; ctx.clearRect(0,0,w,h);
+    const theta=parseFloat(thetaSlider.value);
+    thetaVal.textContent=theta.toFixed(1);
+    titleBar('SUNLIGHT ON BARE SILICON vs AR-COATED SOLAR PANEL', w, sc);
+    const F1 = panel(46*sc, h*0.42, w, sc, 'Bare silicon panel (n≈3.67)', SILICON_EPS, theta, ['#12181f','#2c3e4d'], false);
+    const F2 = panel(46*sc+h*0.46, h*0.42, w, sc, 'AR-coated panel: air → Si₃N₄ (n≈2.0)', COATING_EPS, theta, ['#1a3a63','#3a6ea8'], true);
+
+    const rows=[
+      ['Refracted angle θₜ (bare)', F1.isTIR? 'TIR' : F1.thetaT.toFixed(2)+'°'],
+      ['Refracted angle θₜ (coated)', F2.isTIR? 'TIR' : F2.thetaT.toFixed(2)+'°'],
+      ['η_air', fmt(F1.eta1,'Ω')],
+      ['η_silicon', fmt(F1.eta2,'Ω')],
+      ['η_coating', fmt(F2.eta2,'Ω')],
+      ['Γ bare silicon', F1.GammaTE.toFixed(4)],
+      ['Γ AR-coated', F2.GammaTE.toFixed(4)],
+      ['Reflectance R (bare)', (F1.R_TE*100).toFixed(2)+' %'],
+      ['Reflectance R (coated)', (F2.R_TE*100).toFixed(2)+' %'],
+      ['Reflection loss reduced by', ((F1.R_TE-F2.R_TE)*100).toFixed(2)+' pts'],
+      ["Ideal coating n (√(n_air·n_Si))", Math.sqrt(Math.sqrt(SILICON_EPS)).toFixed(2)]
+    ];
+    document.getElementById('solarReadout').innerHTML = rows.map(r=>`<tr><td class="lbl">${r[0]}</td><td class="val">${r[1]}</td></tr>`).join('');
+  }
+  thetaSlider.addEventListener('input',draw);
+  window.addEventListener('resize', draw);
+  draw();
+})();
+</script>
+</body>
+</html>
